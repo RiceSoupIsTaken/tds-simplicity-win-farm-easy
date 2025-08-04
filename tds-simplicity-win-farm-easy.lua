@@ -1,14 +1,13 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TeleportService = game:GetService("TeleportService")
-local remoteFunction = ReplicatedStorage:WaitForChild("RemoteFunction")
-local player = game.Players.LocalPlayer
+ReplicatedStorage = game:GetService("ReplicatedStorage")
+TeleportService = game:GetService("TeleportService")
+remoteFunction = ReplicatedStorage:WaitForChild("RemoteFunction")
+player = game.Players.LocalPlayer
 
--- Assuming RemoteEvent also exists for voting
-local remoteEvent = ReplicatedStorage:WaitForChild("RemoteEvent")
+remoteEvent = ReplicatedStorage:WaitForChild("RemoteEvent")
 
 -- --- Initial Game Entry / Lobby Check ---
 if workspace:FindFirstChild("Elevators") then
-    local args = {
+    args = {
         [1] = "Multiplayer",
         [2] = "v2:start",
         [3] = {
@@ -18,35 +17,34 @@ if workspace:FindFirstChild("Elevators") then
         }
     }
     remoteFunction:InvokeServer(unpack(args))
-    task.wait(3) -- Give time for the server to move you to the match lobby
-
+    task.wait(3)
 else
     remoteFunction:InvokeServer("Voting", "Skip")
     task.wait(1)
 end
 
 -- --- Cash Retrieval Functions ---
-local guiPath = player:WaitForChild("PlayerGui")
+guiPath = player:WaitForChild("PlayerGui")
     :WaitForChild("ReactUniversalHotbar")
     :WaitForChild("Frame")
     :WaitForChild("values")
     :WaitForChild("cash")
     :WaitForChild("amount")
 
-local function getCash()
-    local rawText = guiPath.Text or ""
-    local cleaned = rawText:gsub("[^%d%-]", "")
+function getCash()
+    rawText = guiPath.Text or ""
+    cleaned = rawText:gsub("[^%d%-]", "")
     return tonumber(cleaned) or 0
 end
 
-local function waitForCash(minAmount)
+function waitForCash(minAmount)
     while getCash() < minAmount do
         task.wait(1)
     end
 end
 
 -- --- Safe Remote Invocation Helpers (No console output from these) ---
-local function safeInvoke(args, cost)
+function safeInvoke(args, cost)
     if cost then
         waitForCash(cost)
     end
@@ -56,7 +54,7 @@ local function safeInvoke(args, cost)
     task.wait(1)
 end
 
-local function safeFire(args)
+function safeFire(args)
     pcall(function()
         remoteEvent:FireServer(unpack(args))
     end)
@@ -92,15 +90,13 @@ safeInvoke({
 task.wait(5)
 
 -- Ensure character is loaded and get necessary parts
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-local humanoid = character:WaitForChild("Humanoid")
+character = player.Character or player.CharacterAdded:Wait()
+humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+humanoid = character:WaitForChild("Humanoid")
 task.wait(2)
 
----
-## In-Match Tower Placement (Simplicity - Brawler & Accelerator)
----
-local placementSequence = {
+-- --- In-Match Tower Placement (Simplicity - Brawler & Accelerator) ---
+placementSequence = {
     -- Brawlers (Cost 600 each)
     { args = { "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-20.368831634521484, 0.9999852180480957, -12.301240921020508) }, "Brawler" }, cost = 600 },
     { args = { "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-17.884721755981445, 0.9999923706054688, -11.87646198272705) }, "Brawler" }, cost = 600 },
@@ -117,18 +113,17 @@ for _, step in ipairs(placementSequence) do
 end
 
 -- --- Parallel Upgrade Loop and Main Gameplay Timer ---
-local upgradeDone = false
+upgradeDone = false
 task.spawn(function()
-    -- The upgrade loop will run in parallel with the main timer
-    local towerFolder = workspace:WaitForChild("Towers", 600)
+    towerFolder = workspace:WaitForChild("Towers", 600)
     if not towerFolder then return end
-    local maxedTowers = {}
+    maxedTowers = {}
 
     while not upgradeDone do
-        local towers = towerFolder:GetChildren()
+        towers = towerFolder:GetChildren()
         for i, tower in ipairs(towers) do
             if not maxedTowers[tower] then
-                local args = {
+                args = {
                     "Troops",
                     "Upgrade",
                     "Set",
@@ -137,7 +132,7 @@ task.spawn(function()
                         Path = 1
                     }
                 }
-                local success, err = pcall(function()
+                success, err = pcall(function()
                     remoteFunction:InvokeServer(unpack(args))
                 end)
                 if not success and string.find(tostring(err), "Max Level", 1, true) then
