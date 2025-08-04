@@ -100,8 +100,10 @@ humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 humanoidRootPart.CFrame = CFrame.new(vector.create(-20.368831634521484, 0.9999852180480957, -12.301240921020508))
 
 -- Main gameplay timer now runs in parallel with other tasks
+local upgradeDone = false
 task.spawn(function()
     task.wait(600)
+    upgradeDone = true
     -- Teleport at the end of the round
     TeleportService:Teleport(3260590327)
 end)
@@ -123,7 +125,6 @@ for _, step in ipairs(placementSequence) do
 end
 
 -- --- Parallel Upgrade Loop ---
-upgradeDone = false
 task.spawn(function()
     towerFolder = workspace:WaitForChild("Towers", 600)
     if not towerFolder then return end
@@ -153,5 +154,3 @@ task.spawn(function()
         task.wait(1)
     end
 end)
-
-upgradeDone = true
