@@ -18,7 +18,8 @@ if workspace:FindFirstChild("Elevators") then
         }
     }
     remoteFunction:InvokeServer(unpack(args))
-    task.wait(3)
+    task.wait(3) -- Give time for the server to move you to the match lobby
+
 else
     remoteFunction:InvokeServer("Voting", "Skip")
     task.wait(1)
