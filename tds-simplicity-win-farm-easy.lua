@@ -93,13 +93,12 @@ safeInvoke({
 	"Skip"
 })
 
-task.wait(5)
 
 -- Ensure character is loaded and get necessary parts
 character = player.Character or player.CharacterAdded:Wait()
 humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 humanoid = character:WaitForChild("Humanoid")
-task.wait(2)
+task.wait(1)
 
 -- --- In-Match Tower Placement (Simplicity - Brawler & Accelerator) ---
 placementSequence = {
