@@ -86,20 +86,18 @@ safeInvoke({
     "LobbyVoting",
     "Ready"
 })
-task.wait(10)
--- NEW: This is the new ready button you found.
-local args = {
-	"Voting",
-	"Skip"
-}
-game:GetService("ReplicatedStorage"):WaitForChild("RemoteFunction"):InvokeServer(unpack(args))
 
+-- The direct remote event you confirmed works.
+game:GetService("ReplicatedStorage"):WaitForChild("RemoteFunction"):InvokeServer("Voting", "Skip")
+task.wait(1)
+
+task.wait(5)
 
 -- Ensure character is loaded and get necessary parts
 character = player.Character or player.CharacterAdded:Wait()
 humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 humanoid = character:WaitForChild("Humanoid")
-task.wait(1)
+task.wait(2)
 
 -- --- In-Match Tower Placement (Simplicity - Brawler & Accelerator) ---
 placementSequence = {
