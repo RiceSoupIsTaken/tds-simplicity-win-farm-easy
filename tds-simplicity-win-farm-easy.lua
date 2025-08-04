@@ -99,15 +99,9 @@ task.wait(1)
 -- --- CRITICAL TIMING CHANGE ---
 -- Place the first brawler immediately after the skip vote
 -- to beat the first wave of enemies.
-safeInvoke({ "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-20.368831634521484, 0.9999852180480957, -12.301240921020508) }, "Brawler" }, 600)
+safeInvoke({ "Troops", "Place", { Rotation = Cframe.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-20.368831634521484, 0.9999852180480957, -12.301240921020508) }, "Brawler" }, 600)
 
 task.wait(5)
-
--- Ensure character is loaded and get necessary parts
-character = player.Character or player.CharacterAdded:Wait()
-humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-humanoid = character:WaitForChild("Humanoid")
-task.wait(2)
 
 -- --- In-Match Tower Placement (Simplicity - Brawler & Accelerator) ---
 placementSequence = {
