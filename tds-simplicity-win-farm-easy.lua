@@ -44,7 +44,7 @@ function waitForCash(minAmount)
     end
 end
 
--- --- Safe Remote Invocation Helpers (No console output from these) ---
+-- --- Safe Remote Invocation Helpers ---
 function safeInvoke(args, cost)
     if cost then
         waitForCash(cost)
@@ -62,8 +62,8 @@ function safeFire(args)
     task.wait(1)
 end
 
--- --- Lobby Actions (After Game Join / Teleport to Pre-Match Lobby) ---
-task.wait(1)
+-- --- Lobby Actions (After Game Join / Teleport) ---
+task.wait(5)
 
 -- Map Override
 safeInvoke({
@@ -78,7 +78,7 @@ safeFire({
     "LobbyVoting",
     "Vote",
     "Simplicity",
-    Vector3.new(16.38364601135254, 9.824828147888184, 58.03911209106445)
+    vector.create(16.38364601135254, 9.824828147888184, 58.03911209106445)
 })
 task.wait(1)
 
@@ -88,74 +88,16 @@ safeInvoke({
     "Ready"
 })
 
--- Wait a few seconds for the game to process the Ready vote
--- before sending the Skip vote.
 task.wait(5)
 
 -- Send the 'Skip' vote once.
 game:GetService("ReplicatedStorage"):WaitForChild("RemoteFunction"):InvokeServer("Voting", "Skip")
 task.wait(1)
 
--- --- CRITICAL TIMING CHANGE ---
--- Place the first brawler immediately after the skip vote
--- to beat the first wave of enemies.
-safeInvoke({ "Troops", "Place", { Rotation = Cframe.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-20.368831634521484, 0.9999852180480957, -12.301240921020508) }, "Brawler" }, 600)
-
-task.wait(5)
-
 -- --- In-Match Tower Placement (Simplicity - Brawler & Accelerator) ---
 placementSequence = {
-    -- The first brawler is already placed.
-    { args = { "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-17.884721755981445, 0.9999923706054688, -11.87646198272705) }, "Brawler" }, cost = 600 },
-    { args = { "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-18.509071350097656, 0.9999880790710449, -9.548937797546387) }, "Brawler" }, cost = 600 },
-    { args = { "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-18.355854034423828, 1.0000011920928955, -7.118582725524902) }, "Brawler" }, cost = 600 },
-    { args = { "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-18.39682388305664, 1.0000007152557373, -4.743110656738281) }, "Brawler" }, cost = 600 },
-    { args = { "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-17.87398910522461, 1.0000003576278687, -2.154684066772461) }, "Brawler" }, cost = 600 },
-    -- Accelerator (Cost 4500)
-    { args = { "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-6.117673873901367, 0.9999880790710449, -3.684736728668213) }, "Accelerator" }, cost = 4500 },
-}
-
-for _, step in ipairs(placementSequence) do
-    safeInvoke(step.args, step.cost)
-end
-
--- --- Parallel Upgrade Loop and Main Gameplay Timer ---
-upgradeDone = false
-task.spawn(function()
-    towerFolder = workspace:WaitForChild("Towers", 600)
-    if not towerFolder then return end
-    maxedTowers = {}
-
-    while not upgradeDone do
-        towers = towerFolder:GetChildren()
-        for i, tower in ipairs(towers) do
-            if not maxedTowers[tower] then
-                args = {
-                    "Troops",
-                    "Upgrade",
-                    "Set",
-                    {
-                        Troop = tower,
-                        Path = 1
-                    }
-                }
-                success, err = pcall(function()
-                    remoteFunction:InvokeServer(unpack(args))
-                end)
-                if not success and string.find(tostring(err), "Max Level", 1, true) then
-                    maxedTowers[tower] = true
-                end
-            end
-        end
-        task.wait(1)
-    end
-end)
-
--- Main gameplay timer set to 600 seconds (10 minutes) as requested
-task.wait(600)
-
-upgradeDone = true
-task.wait(1)
-
--- --- End of Round: Teleport ---
-TeleportService:Teleport(3260590327)
+    -- The first brawler is placed immediately to beat the first wave
+    { args = { "Troops", "Pl\208\176ce", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = vector.create(-20.368831634521484, 0.9999852180480957, -12.301240921020508) }, "Brawler" }, cost = 600 },
+    -- Remaining Brawlers
+    { args = { "Troops", "Pl\208\176ce", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = vector.create(-17.884721755981445, 0.9999923706054688, -11.87646198272705) }, "Brawler" }, cost = 600 },
+    { args = { "Troops", "Pl\208\176ce", { Rotation = CFrame.new(0, 0,
