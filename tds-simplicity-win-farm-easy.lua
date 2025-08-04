@@ -86,7 +86,7 @@ safeInvoke({
     "LobbyVoting",
     "Ready"
 })
-task.wait(3)
+task.wait(6)
 -- NEW: This is the new ready button you found.
 safeInvoke({
 	"Voting",
