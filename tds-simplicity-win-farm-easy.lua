@@ -63,7 +63,7 @@ function safeFire(args)
 end
 
 -- --- Lobby Actions (After Game Join / Teleport to Pre-Match Lobby) ---
-task.wait(5)
+task.wait(1)
 
 -- Map Override
 safeInvoke({
