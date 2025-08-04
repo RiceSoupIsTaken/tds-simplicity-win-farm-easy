@@ -99,8 +99,12 @@ character = player.Character or player.CharacterAdded:Wait()
 humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 humanoidRootPart.CFrame = CFrame.new(vector.create(-20.368831634521484, 0.9999852180480957, -12.301240921020508))
 
--- Main gameplay timer starts here (10 minutes)
-task.wait(570)
+-- Main gameplay timer now runs in parallel with other tasks
+task.spawn(function()
+    task.wait(600)
+    -- Teleport at the end of the round
+    TeleportService:Teleport(3260590327)
+end)
 
 -- --- In-Match Tower Placement (Simplicity - Brawler & Accelerator) ---
 placementSequence = {
@@ -150,9 +154,4 @@ task.spawn(function()
     end
 end)
 
-
 upgradeDone = true
-task.wait(1)
-
--- --- End of Round: Teleport ---
-TeleportService:Teleport(3260590327)
