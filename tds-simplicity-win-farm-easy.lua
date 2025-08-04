@@ -32,6 +32,7 @@ guiPath = player:WaitForChild("PlayerGui")
     :WaitForChild("amount")
 
 function getCash()
+    if not guiPath then return 0 end
     rawText = guiPath.Text or ""
     cleaned = rawText:gsub("[^%d%-]", "")
     return tonumber(cleaned) or 0
@@ -87,9 +88,18 @@ safeInvoke({
     "Ready"
 })
 
--- The direct remote event you confirmed works.
+-- Wait a few seconds for the game to process the Ready vote
+-- before sending the Skip vote.
+task.wait(5)
+
+-- Send the 'Skip' vote once.
 game:GetService("ReplicatedStorage"):WaitForChild("RemoteFunction"):InvokeServer("Voting", "Skip")
 task.wait(1)
+
+-- --- CRITICAL TIMING CHANGE ---
+-- Place the first brawler immediately after the skip vote
+-- to beat the first wave of enemies.
+safeInvoke({ "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-20.368831634521484, 0.9999852180480957, -12.301240921020508) }, "Brawler" }, 600)
 
 task.wait(5)
 
@@ -101,8 +111,7 @@ task.wait(2)
 
 -- --- In-Match Tower Placement (Simplicity - Brawler & Accelerator) ---
 placementSequence = {
-    -- Brawlers (Cost 600 each)
-    { args = { "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-20.368831634521484, 0.9999852180480957, -12.301240921020508) }, "Brawler" }, cost = 600 },
+    -- The first brawler is already placed.
     { args = { "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-17.884721755981445, 0.9999923706054688, -11.87646198272705) }, "Brawler" }, cost = 600 },
     { args = { "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-18.509071350097656, 0.9999880790710449, -9.548937797546387) }, "Brawler" }, cost = 600 },
     { args = { "Troops", "Place", { Rotation = CFrame.new(0, 0, 0, 1, -0, 0, 0, 1, -0, 0, 0, 1), Position = Vector3.new(-18.355854034423828, 1.0000011920928955, -7.118582725524902) }, "Brawler" }, cost = 600 },
