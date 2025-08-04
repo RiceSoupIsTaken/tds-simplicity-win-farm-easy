@@ -88,10 +88,11 @@ safeInvoke({
 })
 task.wait(10)
 -- NEW: This is the new ready button you found.
-safeInvoke({
+local args = {
 	"Voting",
 	"Skip"
-})
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RemoteFunction"):InvokeServer(unpack(args))
 
 
 -- Ensure character is loaded and get necessary parts
